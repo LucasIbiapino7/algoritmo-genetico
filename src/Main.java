@@ -7,7 +7,7 @@ public class Main {
         System.out.println(AlgoritmoGenetico.itens.size());
         List<Cromossomo> populacao = Populacao.inicializar(AlgoritmoGenetico.itens.size(), AlgoritmoGenetico.tamanhoPopulacao);
 
-        for (int i = 0; i < 2; i++){
+        for (int i = 0; i < AlgoritmoGenetico.numeroGerecoes; i++){
             Populacao.calcFitness(populacao);
             for (Cromossomo c : populacao){
                 System.out.println(c.getGenes() + " - Valor Fitness: " + c.getFitness() + " - Custo: " + c.getCusto());

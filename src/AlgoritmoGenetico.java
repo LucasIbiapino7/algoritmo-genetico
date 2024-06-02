@@ -5,8 +5,8 @@ import java.util.Random;
 public class AlgoritmoGenetico {
     static List<Item> itens = new ArrayList<>();
     static Integer orcamento = 75;
-    static Integer numeroGerecoes = 100;
-    static Integer tamanhoPopulacao = 40;
+    static Integer numeroGerecoes = 75;
+    static Integer tamanhoPopulacao = 50;
     static Double taxaMutacao = 0.01;
     static Random random = new Random();
 

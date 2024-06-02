@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cromossomo {
+public class Cromossomo implements Comparable<Cromossomo> {
     private List<Integer> genes;
     private Integer fitness;
     private Integer custo;
@@ -32,5 +32,10 @@ public class Cromossomo {
 
     public void setCusto(Integer custo) {
         this.custo = custo;
+    }
+
+    @Override
+    public int compareTo(Cromossomo o) {
+        return - this.fitness.compareTo(o.fitness);
     }
 }

@@ -26,6 +26,27 @@ public class Populacao {
         return populacao;
     }
 
+    //VERSAO ONDE NÃO PERMITIMOS VALORES DE CUSTO MAIOR
+    /*
+    Cromossomo cromossomo = new Cromossomo(tamCromossomo);
+            do { // MECANISMO UTILIZADO PARA CRIAR UMA POPULACAO QUE NÃO ULTRAPASSE O CUSTO
+                cromossomo = new Cromossomo(tamCromossomo);
+                for (int j = 0; j < tamCromossomo; j++){
+                    cromossomo.getGenes().add(j, random.nextInt(2));
+                }
+            } while ( calculaCustoTotal(cromossomo) > AlgoritmoGenetico.orcamento );
+     */
+
+    private static Integer calculaCustoTotal(Cromossomo cromossomo) {
+        int sum = 0;
+        for (int i = 1; i < cromossomo.getGenes().size(); i++){
+            if (cromossomo.getGenes().get(i) == 1){
+                sum += AlgoritmoGenetico.itens.get(i).getPreco();
+            }
+        }
+        return sum;
+    }
+
     /**
      *
      * Calcula e seta os valores fitness para cada cromossomo da nossa população
@@ -45,8 +66,10 @@ public class Populacao {
                     somaCusto += AlgoritmoGenetico.itens.get(i).getPreco();
                 }
             }
+            // Penaliza o cromossomo que o valor do custo for superior ao orcamento
+            int fitness = somaImportancia - Math.max(0, somaCusto - AlgoritmoGenetico.orcamento);
             // Nesse momento, estou salvando até os valores onde o Custo é maior, para caso queira mudar mais a frente
-            cromossomo.setFitness(somaImportancia);
+            cromossomo.setFitness((somaCusto > AlgoritmoGenetico.orcamento) ? fitness : somaImportancia);
             cromossomo.setCusto(somaCusto);
         }
     }
@@ -54,12 +77,51 @@ public class Populacao {
     public static List<Cromossomo> evolui(List<Cromossomo> populacao){
         List<Cromossomo> novaPopulacao = new ArrayList<>(populacao);
         for (int i = 0; i < 10; i++){
-            Cromossomo[] pais = roleta(populacao);
-            Cromossomo[] filhos = crossover(pais[0], pais[1]);
+            Cromossomo[] pais = roleta(populacao); // Escolhe os pais pela roleta
+            Cromossomo[] filhos = crossover(pais[0], pais[1]); // Faz o crossover
+            // adiciona os novos filhos
             novaPopulacao.add(filhos[0]);
             novaPopulacao.add(filhos[1]);
         }
+        //Remove os menos aptos para manter o tamanho da população
+        //calcFitness(novaPopulacao);
+        novaPopulacao = selecao(novaPopulacao, AlgoritmoGenetico.tamanhoPopulacao);
+        mutacao(novaPopulacao);
         return novaPopulacao;
+    }
+
+    /**
+     *
+     * Percorre a populacao verificando se pode deve haver mutacao ou não de maneira aleatória, caso ocorra, um ponto
+     * é escolhido e seu valor é invertido
+     *
+     * @param populacao - Lista da população
+     */
+    private static void mutacao(List<Cromossomo> populacao) {
+        for (Cromossomo cromossomo : populacao){
+            if (random.nextDouble() < AlgoritmoGenetico.taxaMutacao){
+                int pontoMutacao = random.nextInt(1, cromossomo.getGenes().size());
+                System.out.println("TEVE MUTAÇÃO");
+                if (cromossomo.getGenes().get(pontoMutacao) == 0){
+                    cromossomo.getGenes().set(pontoMutacao, 1);
+                } else {
+                    cromossomo.getGenes().set(pontoMutacao, 0);
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * Responsável por manter o tamanho da populção de acordo com o que foi estipulado como tamanho máximo
+     *
+     * @param populacao - Lista de cromossomos
+     * @param tamanhoPopulacao - tamanho da populção que foi estipulado no AlgoritmoGenético
+     * @return - Lista com a população restante
+     */
+    private static List<Cromossomo> selecao(List<Cromossomo> populacao, Integer tamanhoPopulacao) {
+        populacao = populacao.stream().sorted().toList();
+        return new ArrayList<>(populacao.subList(0, tamanhoPopulacao));
     }
 
     /**
@@ -87,6 +149,7 @@ public class Populacao {
                 }
             }
         }
+        calcFitness(List.of(pais)); // Calcula os valores fitness
         return pais;
     }
 
@@ -113,7 +176,9 @@ public class Populacao {
 
         //System.out.println("FILHO 1 - " + filho1.getGenes());
         //System.out.println("FILHO 2 - " + filho2.getGenes());
-        return new Cromossomo[]{filho1, filho2}; // Retorna um vetor com os dois novos filhos
+        Cromossomo[] filhos = new Cromossomo[]{filho1, filho2};
+        calcFitness(List.of(filhos));
+        return filhos; // Retorna um vetor com os dois novos filhos
     }
 
 }
