@@ -10,6 +10,9 @@ public class AlgoritmoGenetico {
     static Double taxaMutacao = 0.01;
     static Random random = new Random();
 
+    /**
+     * Responsável por preencher nossa lista de Items conforme foi especificado no problema
+     */
     public static void addItems(){
         itens.add(0, new Item());
         itens.add(1, new Item("Arroz", 22, 10));

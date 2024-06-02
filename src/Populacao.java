@@ -51,6 +51,17 @@ public class Populacao {
         }
     }
 
+    public static List<Cromossomo> evolui(List<Cromossomo> populacao){
+        List<Cromossomo> novaPopulacao = new ArrayList<>(populacao);
+        for (int i = 0; i < 10; i++){
+            Cromossomo[] pais = roleta(populacao);
+            Cromossomo[] filhos = crossover(pais[0], pais[1]);
+            novaPopulacao.add(filhos[0]);
+            novaPopulacao.add(filhos[1]);
+        }
+        return novaPopulacao;
+    }
+
     /**
      *
      * Faz o sorteio por meio de uma "roleta" de dois cromossomos da nossa população que posteriormente passarão
@@ -60,7 +71,7 @@ public class Populacao {
      * @param populacao - população atual
      * @return - Vetor com dois cromossomos selecionados
      */
-    public static Cromossomo[] roleta(List<Cromossomo> populacao){
+    private static Cromossomo[] roleta(List<Cromossomo> populacao){
         Cromossomo[] pais = new Cromossomo[2]; // Instancia um vetor
         // soma todos os valores fitness de cada cromossomo da população
         int totalFitness = populacao.stream().mapToInt(c -> c.getFitness()).sum();
@@ -77,6 +88,32 @@ public class Populacao {
             }
         }
         return pais;
+    }
+
+    private static Cromossomo[] crossover(Cromossomo pai1, Cromossomo pai2){
+
+        //System.out.println("PAI 1 - " + pai1.getGenes());
+        //System.out.println("PAI 2 - " + pai2.getGenes());;
+
+        Cromossomo filho1 = new Cromossomo(pai1.getGenes().size()); // Cria o primeiro filho
+        Cromossomo filho2 = new Cromossomo(pai2.getGenes().size()); // Cria o segundo filho
+        int pontoCrossover = random.nextInt(1, pai1.getGenes().size()); // Escolhe um ponto no vetor
+
+        //System.out.println(pontoCrossover + " PONTO DO CORTE AQUI");
+
+        for (int i = 0; i < pai1.getGenes().size(); i++){
+            if (i < pontoCrossover){
+                filho1.getGenes().add(i, pai1.getGenes().get(i)); // Adicciona no filho 1 os genes do pai 1
+                filho2.getGenes().add(i, pai2.getGenes().get(i)); // Adiciona no filho 2 os genes do pai 2
+            } else {
+                filho1.getGenes().add(i, pai2.getGenes().get(i)); // Adicciona no filho 1 os genes do pai 2
+                filho2.getGenes().add(i, pai1.getGenes().get(i)); // Adiciona no filho 2 os genes do pai 1
+            }
+        }
+
+        //System.out.println("FILHO 1 - " + filho1.getGenes());
+        //System.out.println("FILHO 2 - " + filho2.getGenes());
+        return new Cromossomo[]{filho1, filho2}; // Retorna um vetor com os dois novos filhos
     }
 
 }

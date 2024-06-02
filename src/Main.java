@@ -6,13 +6,17 @@ public class Main {
         AlgoritmoGenetico.addItems();
         System.out.println(AlgoritmoGenetico.itens.size());
         List<Cromossomo> populacao = Populacao.inicializar(AlgoritmoGenetico.itens.size(), AlgoritmoGenetico.tamanhoPopulacao);
-        Populacao.calcFitness(populacao);
-        for (Cromossomo c : populacao){
-            System.out.println(c.getGenes() + " - Valor Fitness: " + c.getFitness() + " - Custo: " + c.getCusto());
+
+        for (int i = 0; i < 2; i++){
+            Populacao.calcFitness(populacao);
+            for (Cromossomo c : populacao){
+                System.out.println(c.getGenes() + " - Valor Fitness: " + c.getFitness() + " - Custo: " + c.getCusto());
+            }
+            System.out.println(populacao.size() + " - TAMANHO AQUI");
+            populacao = Populacao.evolui(populacao);
+            System.out.println("============================================");
         }
-        int totalFitness = populacao.stream().mapToInt(c -> c.getFitness()).sum();
-        System.out.println(totalFitness);
-        System.out.println(AlgoritmoGenetico.random.nextInt(totalFitness));
+
     }
 
     /*
