@@ -37,15 +37,6 @@ public class Populacao {
             } while ( calculaCustoTotal(cromossomo) > AlgoritmoGenetico.orcamento );
      */
 
-    private static Integer calculaCustoTotal(Cromossomo cromossomo) {
-        int sum = 0;
-        for (int i = 1; i < cromossomo.getGenes().size(); i++){
-            if (cromossomo.getGenes().get(i) == 1){
-                sum += AlgoritmoGenetico.itens.get(i).getPreco();
-            }
-        }
-        return sum;
-    }
 
     /**
      *
@@ -67,7 +58,7 @@ public class Populacao {
                 }
             }
             // Penaliza o cromossomo que o valor do custo for superior ao orcamento
-            int fitness = somaImportancia - Math.max(0, somaCusto - AlgoritmoGenetico.orcamento);
+            int fitness = somaImportancia - Math.max(0, somaCusto - AlgoritmoGenetico.orcamento) - 10;
             // Nesse momento, estou salvando até os valores onde o Custo é maior, para caso queira mudar mais a frente
             cromossomo.setFitness((somaCusto > AlgoritmoGenetico.orcamento) ? fitness : somaImportancia);
             cromossomo.setCusto(somaCusto);
@@ -114,6 +105,7 @@ public class Populacao {
     /**
      *
      * Responsável por manter o tamanho da populção de acordo com o que foi estipulado como tamanho máximo
+     * Técnica - Ordenar e remover os últimos
      *
      * @param populacao - Lista de cromossomos
      * @param tamanhoPopulacao - tamanho da populção que foi estipulado no AlgoritmoGenético
@@ -122,6 +114,32 @@ public class Populacao {
     private static List<Cromossomo> selecao(List<Cromossomo> populacao, Integer tamanhoPopulacao) {
         populacao = populacao.stream().sorted().toList();
         return new ArrayList<>(populacao.subList(0, tamanhoPopulacao));
+    }
+
+
+    /**
+     *
+     * Responsável por manter o tamanho da populção de acordo com o que foi estipulado como tamanho máximo
+     * Técnica - Utiliza uma roleta para remover os cromossomos (aleatório)
+     *
+     * @param populacao - Lista de cromossomos
+     * @param tamanhoPopulacao - tamanho da populção que foi estipulado no AlgoritmoGenético
+     * @return - Lista com a população restante
+     */
+    private static List<Cromossomo> selecaoRoleta(List<Cromossomo> populacao, Integer tamanhoPopulacao){
+        while (populacao.size() > tamanhoPopulacao){
+            int totalFitness = populacao.stream().mapToInt(c -> c.getFitness()).sum();
+            int giro = random.nextInt(totalFitness); // Sorteia um valor
+            int sum = 0;
+            for (Cromossomo cromossomo : populacao){
+                sum += cromossomo.getFitness(); // Vai adicionando os valores fitness
+                if (sum >= giro){ // Indica que chegamos na porção sorteada da roleta
+                    populacao.remove(cromossomo); // Adiciona o cromossomo ao vetor que vai ser retornado
+                    break;
+                }
+            }
+        }
+        return populacao;
     }
 
     /**
@@ -153,6 +171,15 @@ public class Populacao {
         return pais;
     }
 
+    /**
+     *
+     * Responsável por receber dois cromossomos e fazer o crossover entre eles, sorteando um ponto e cruzando
+     * os genes de cada um a partir desse ponto
+     *
+     * @param pai1 - cromossomo
+     * @param pai2 - cromossomo
+     * @return - um vetor com dois cromossomos resultado do crossover entre os param de entrada
+     */
     private static Cromossomo[] crossover(Cromossomo pai1, Cromossomo pai2){
 
         //System.out.println("PAI 1 - " + pai1.getGenes());
@@ -181,4 +208,32 @@ public class Populacao {
         return filhos; // Retorna um vetor com os dois novos filhos
     }
 
+    /**
+     *
+     * Calcula o custo total de um cromossomo baseado na tabela de itens
+     *
+     * @param cromossomo - Lista de cromossomos
+     * @return - valor do custo total
+     */
+    private static Integer calculaCustoTotal(Cromossomo cromossomo) {
+        int sum = 0;
+        for (int i = 1; i < cromossomo.getGenes().size(); i++){
+            if (cromossomo.getGenes().get(i) == 1){
+                sum += AlgoritmoGenetico.itens.get(i).getPreco();
+            }
+        }
+        return sum;
+    }
+
+    /**
+     *
+     * Retorna o melhor resultado da população
+     *
+     * @param populacao - Lista de cromossomos
+     * @return - melhor resposta obtida
+     */
+    public static Cromossomo resultado(List<Cromossomo> populacao) {
+        populacao = populacao.stream().sorted().toList();
+        return populacao.getFirst();
+    }
 }

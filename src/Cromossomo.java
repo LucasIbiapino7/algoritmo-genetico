@@ -38,4 +38,29 @@ public class Cromossomo implements Comparable<Cromossomo> {
     public int compareTo(Cromossomo o) {
         return - this.fitness.compareTo(o.fitness);
     }
+
+    public String genesToString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 1; i < genes.size() - 1; i++){
+            sb.append(genes.get(i)).append(", ");
+        }
+        sb.append(genes.getLast()).append("]");
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(genesToString());
+        sb.append("\nValor Fitness: ").append(fitness);
+        sb.append("\nCusto: ").append(custo);
+        sb.append("\nItens: ");
+        for (int i = 1; i < genes.size(); i++){
+            if (genes.get(i) == 1){
+                sb.append(i).append(" - ").append(AlgoritmoGenetico.itens.get(i)).append(" \n");
+            }
+        }
+        return sb.toString();
+    }
 }

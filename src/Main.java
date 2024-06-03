@@ -10,12 +10,14 @@ public class Main {
         for (int i = 0; i < AlgoritmoGenetico.numeroGerecoes; i++){
             Populacao.calcFitness(populacao);
             for (Cromossomo c : populacao){
-                System.out.println(c.getGenes() + " - Valor Fitness: " + c.getFitness() + " - Custo: " + c.getCusto());
+                System.out.println(c.genesToString() + " - Valor Fitness: " + c.getFitness() + " - Custo: " + c.getCusto());
             }
-            System.out.println(populacao.size() + " - TAMANHO AQUI");
             populacao = Populacao.evolui(populacao);
             System.out.println("============================================");
         }
+
+        Cromossomo result = Populacao.resultado(populacao);
+        System.out.println("Resultado Obtido: " + result);
 
     }
 
