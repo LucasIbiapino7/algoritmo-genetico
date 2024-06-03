@@ -45,7 +45,7 @@ public class Cromossomo implements Comparable<Cromossomo> {
         for (int i = 1; i < genes.size() - 1; i++){
             sb.append(genes.get(i)).append(", ");
         }
-        sb.append(genes.getLast()).append("]");
+        sb.append(genes.get(genes.size() - 1)).append("]");
         return sb.toString();
     }
 
